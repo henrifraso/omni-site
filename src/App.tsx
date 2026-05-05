@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
+import { loadStripe } from '@stripe/stripe-js'
+import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js'
+
+const stripePromise = loadStripe('pk_live_51TTp8hCgZ9t9JfybukYmBAlHZfMzRgzl6DesHUCuH4XsUnuxWVCs4ymxfK5YB1odG6HOay2M5jG13I0uqHtVVuyF00bQ09EOkn')
 
 const styles = `
   html, body { background: #000; cursor: default; overscroll-behavior: none; }
@@ -12,6 +16,11 @@ const styles = `
   @keyframes btn-appear {
     from { opacity: 0; transform: translateY(5px); }
     to   { opacity: 0.7; transform: translateY(0); }
+  }
+
+  @keyframes modal-in {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   @media (max-width: 768px) {
@@ -85,12 +94,91 @@ const styles = `
     opacity: 1 !important;
     letter-spacing: 0.52em !important;
   }
+
+  .checkout-modal {
+    animation: modal-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Stripe iframe scrollable */
+  #embedded-checkout { overflow-y: auto; max-height: 80vh; }
 `
+
+function CheckoutModal({ onClose }: { onClose: () => void }) {
+  const fetchClientSecret = useCallback(async () => {
+    const res = await fetch('/api/checkout', { method: 'POST' })
+    const data = await res.json()
+    return data.clientSecret
+  }, [])
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 200,
+        background: 'rgba(0,0,0,0.82)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '16px',
+      }}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+    >
+      <div
+        className="checkout-modal"
+        style={{
+          background: '#0e0e0e',
+          border: '1px solid rgba(255,255,255,0.09)',
+          borderRadius: '20px',
+          boxShadow: '0 32px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04)',
+          width: '100%',
+          maxWidth: '480px',
+          overflow: 'hidden',
+          position: 'relative',
+        }}
+      >
+        {/* Fechar */}
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute', top: '16px', right: '16px',
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '50%',
+            width: '32px', height: '32px',
+            color: 'rgba(255,255,255,0.5)',
+            fontSize: '16px', lineHeight: '1',
+            cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 10,
+          } as React.CSSProperties}
+        >
+          ×
+        </button>
+
+        <div style={{ padding: '32px 24px 24px' }}>
+          <EmbeddedCheckoutProvider stripe={stripePromise} options={{ fetchClientSecret }}>
+            <EmbeddedCheckout id="embedded-checkout" />
+          </EmbeddedCheckoutProvider>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function App() {
   const h1Ref = useRef<HTMLHeadingElement>(null)
-  const [blurred, setBlurred] = useState(false)
+  const [blurred] = useState(false)
+  const [showCheckout, setShowCheckout] = useState(false)
   const isMobile = window.innerWidth <= 768
+
+  /* Verificar retorno do Stripe após pagamento */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('session_id')) {
+      // Pagamento concluído — limpa URL e mostra tela de download
+      window.history.replaceState({}, '', '/')
+      // TODO: mostrar tela de download
+    }
+  }, [])
 
   /* scaleY mobile */
   useEffect(() => {
@@ -173,12 +261,12 @@ export default function App() {
 
       </div>
 
-      {/* Fade topo/rodapé — funde letras com as bordas pretas */}
+      {/* Fade topo/rodapé */}
       <div className="fade-overlay" style={{
         position: 'fixed', inset: 0, zIndex: 50, pointerEvents: 'none',
       }} />
 
-      {/* Botão — position:fixed fora do container blur */}
+      {/* Botão */}
       <div className="rev-btn-wrap" style={{
         position: 'fixed', top: '50%', left: '50%',
         transform: 'translate(-50%, -50%) translateZ(0)',
@@ -187,7 +275,7 @@ export default function App() {
       }}>
         <button
           className="rev-btn"
-          onClick={() => setBlurred(b => !b)}
+          onClick={() => setShowCheckout(true)}
           style={{
             fontFamily: "'Big Shoulders Display', sans-serif",
             fontSize: 'clamp(9px, 7vw, 112px)',
@@ -200,7 +288,7 @@ export default function App() {
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             border: 'none',
-            borderRadius: '20px',
+            borderRadius: '4px',
             boxShadow: `
               0 0 0 0.5px rgba(255,255,255,0.14),
               inset 0 1px 0 rgba(255,255,255,0.20),
@@ -230,6 +318,8 @@ export default function App() {
         </button>
       </div>
 
+      {/* Modal Stripe Checkout */}
+      {showCheckout && <CheckoutModal onClose={() => setShowCheckout(false)} />}
     </>
   )
 }
