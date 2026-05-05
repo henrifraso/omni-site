@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js'
+// ui_mode: 'embedded_page' (Stripe renamed from 'embedded' in 2024)
 
 const stripePromise = loadStripe('pk_live_51TTp8hCgZ9t9JfybukYmBAlHZfMzRgzl6DesHUCuH4XsUnuxWVCs4ymxfK5YB1odG6HOay2M5jG13I0uqHtVVuyF00bQ09EOkn')
 
@@ -104,10 +105,18 @@ const styles = `
 `
 
 function CheckoutModal({ onClose }: { onClose: () => void }) {
+  const [apiError, setApiError] = useState<string | null>(null)
+
   const fetchClientSecret = useCallback(async () => {
-    const res = await fetch('/api/checkout', { method: 'POST' })
-    const data = await res.json()
-    return data.clientSecret
+    try {
+      const res = await fetch('/api/checkout', { method: 'POST' })
+      const data = await res.json()
+      if (data.error) { setApiError(data.error); return '' }
+      return data.clientSecret
+    } catch (e) {
+      setApiError(String(e))
+      return ''
+    }
   }, [])
 
   return (
@@ -155,9 +164,15 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
         </button>
 
         <div style={{ padding: '32px 24px 24px' }}>
-          <EmbeddedCheckoutProvider stripe={stripePromise} options={{ fetchClientSecret }}>
-            <EmbeddedCheckout id="embedded-checkout" />
-          </EmbeddedCheckoutProvider>
+          {apiError ? (
+            <div style={{ color: 'rgba(255,100,100,0.9)', fontSize: '14px', textAlign: 'center', padding: '24px' }}>
+              Erro: {apiError}
+            </div>
+          ) : (
+            <EmbeddedCheckoutProvider stripe={stripePromise} options={{ fetchClientSecret }}>
+              <EmbeddedCheckout id="embedded-checkout" />
+            </EmbeddedCheckoutProvider>
+          )}
         </div>
       </div>
     </div>
@@ -275,7 +290,7 @@ export default function App() {
       }}>
         <button
           className="rev-btn"
-          onClick={() => setShowCheckout(true)}
+          onClick={() => { console.log('click'); setShowCheckout(true) }}
           style={{
             fontFamily: "'Big Shoulders Display', sans-serif",
             fontSize: 'clamp(9px, 7vw, 112px)',
