@@ -141,29 +141,32 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
           width: '100%',
           maxWidth: '480px',
           overflow: 'hidden',
-          position: 'relative',
         }}
       >
-        {/* Fechar */}
-        <button
-          onClick={onClose}
-          style={{
-            position: 'absolute', top: '16px', right: '16px',
-            background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '50%',
-            width: '32px', height: '32px',
-            color: 'rgba(255,255,255,0.5)',
-            fontSize: '16px', lineHeight: '1',
-            cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            zIndex: 10,
-          } as React.CSSProperties}
-        >
-          ×
-        </button>
+        {/* Header com botão fechar */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+          padding: '16px 16px 0',
+        }}>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '50%',
+              width: '32px', height: '32px',
+              color: 'rgba(255,255,255,0.5)',
+              fontSize: '18px', lineHeight: '1',
+              cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+            } as React.CSSProperties}
+          >
+            ×
+          </button>
+        </div>
 
-        <div style={{ padding: '32px 24px 24px' }}>
+        <div style={{ padding: '16px 24px 24px' }}>
           {apiError ? (
             <div style={{ color: 'rgba(255,100,100,0.9)', fontSize: '14px', textAlign: 'center', padding: '24px' }}>
               Erro: {apiError}
