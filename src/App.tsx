@@ -18,6 +18,46 @@ const styles = `
     .rev-btn { font-size: clamp(18px, 7.5vw, 38px) !important; padding: 10px 26px 9px !important; font-family: 'Big Shoulders Display', sans-serif !important; font-weight: 900 !important; backdrop-filter: blur(14px) saturate(140%) !important; -webkit-backdrop-filter: blur(14px) saturate(140%) !important; }
   }
 
+  .fade-overlay {
+    background: linear-gradient(to bottom,
+      rgba(0,0,0,1)    0%,
+      rgba(0,0,0,0.87) 1%,
+      rgba(0,0,0,0.66) 2.2%,
+      rgba(0,0,0,0.42) 3.6%,
+      rgba(0,0,0,0.2)  5%,
+      rgba(0,0,0,0.07) 6.2%,
+      rgba(0,0,0,0)    7.5%,
+      rgba(0,0,0,0)    92.5%,
+      rgba(0,0,0,0.07) 93.8%,
+      rgba(0,0,0,0.2)  95%,
+      rgba(0,0,0,0.42) 96.4%,
+      rgba(0,0,0,0.66) 97.8%,
+      rgba(0,0,0,0.87) 99%,
+      rgba(0,0,0,1)    100%
+    );
+  }
+
+  @media (min-width: 769px) {
+    .fade-overlay {
+      background: linear-gradient(to bottom,
+        rgba(0,0,0,1)    0%,
+        rgba(0,0,0,0.87) 0.6%,
+        rgba(0,0,0,0.66) 1.4%,
+        rgba(0,0,0,0.42) 2.4%,
+        rgba(0,0,0,0.2)  3.4%,
+        rgba(0,0,0,0.07) 4.2%,
+        rgba(0,0,0,0)    5%,
+        rgba(0,0,0,0)    95%,
+        rgba(0,0,0,0.07) 95.8%,
+        rgba(0,0,0,0.2)  96.6%,
+        rgba(0,0,0,0.42) 97.6%,
+        rgba(0,0,0,0.66) 98.6%,
+        rgba(0,0,0,0.87) 99.4%,
+        rgba(0,0,0,1)    100%
+      );
+    }
+  }
+
   .rev-btn-wrap { position: relative; }
   .rev-btn-wrap::before {
     content: '';
@@ -82,7 +122,7 @@ export default function App() {
       <div style={{
         position: 'fixed', inset: 0, overflow: 'hidden',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: '#000000',
+        background: 'radial-gradient(ellipse 80% 60% at center, #1a1a1a 0%, #0a0a0a 50%, #000000 100%)',
         filter: blurred ? blurVal : 'none',
         transform: blurred ? 'scale(1.06)' : 'scale(1)',
         transition: 'filter 0.6s ease, transform 0.6s ease',
@@ -134,24 +174,8 @@ export default function App() {
       </div>
 
       {/* Fade topo/rodapé — funde letras com as bordas pretas */}
-      <div style={{
+      <div className="fade-overlay" style={{
         position: 'fixed', inset: 0, zIndex: 50, pointerEvents: 'none',
-        background: `linear-gradient(to bottom,
-          rgba(0,0,0,1)    0%,
-          rgba(0,0,0,0.87) 1%,
-          rgba(0,0,0,0.66) 2.2%,
-          rgba(0,0,0,0.42) 3.6%,
-          rgba(0,0,0,0.2)  5%,
-          rgba(0,0,0,0.07) 6.2%,
-          rgba(0,0,0,0)    7.5%,
-          rgba(0,0,0,0)    92.5%,
-          rgba(0,0,0,0.07) 93.8%,
-          rgba(0,0,0,0.2)  95%,
-          rgba(0,0,0,0.42) 96.4%,
-          rgba(0,0,0,0.66) 97.8%,
-          rgba(0,0,0,0.87) 99%,
-          rgba(0,0,0,1)    100%
-        )`,
       }} />
 
       {/* Botão — position:fixed fora do container blur */}
@@ -172,11 +196,11 @@ export default function App() {
             color: 'transparent',
             opacity: 1,
             textTransform: 'uppercase',
-            background: 'rgba(255,255,255,0.11)',
-            backdropFilter: 'blur(22px) saturate(160%)',
-            WebkitBackdropFilter: 'blur(22px) saturate(160%)',
+            background: 'transparent',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             border: 'none',
-            borderRadius: '999px',
+            borderRadius: '20px',
             boxShadow: `
               0 0 0 0.5px rgba(255,255,255,0.14),
               inset 0 1px 0 rgba(255,255,255,0.20),
@@ -197,11 +221,12 @@ export default function App() {
           } as React.CSSProperties}
         >
           <span style={{
-            background: 'linear-gradient(175deg, #0a0a0a 0%, #2e2e2e 50%, #0d0d0d 100%)',
+            background: 'linear-gradient(180deg, rgba(60,60,60,0.9) 0%, rgba(160,160,160,0.95) 35%, rgba(255,255,255,1) 50%, rgba(160,160,160,0.95) 65%, rgba(60,60,60,0.9) 100%)',
             WebkitBackgroundClip: 'text',
             backgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-          }}>Inicializar</span>
+            textShadow: '0 0 1px rgba(255,255,255,0.35)',
+          }}>Be Different</span>
         </button>
       </div>
 
