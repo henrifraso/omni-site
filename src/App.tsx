@@ -30,19 +30,20 @@ export default function App() {
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(ellipse at center, #e8e8e8 0%, #cccccc 100%)',
+        background: 'radial-gradient(ellipse 20% 20% at center, #ffffff 0%, #f8f8f8 100%)',
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
       }}>
 
+
         {/* Paper grain */}
         <div style={{
           position: 'absolute',
           inset: 0,
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          opacity: 0.032,
+          opacity: 0.025,
           pointerEvents: 'none',
           zIndex: 1,
         }} />
@@ -70,20 +71,20 @@ export default function App() {
             transform: 'scaleX(1.3)', transformOrigin: 'center',
             background: 'linear-gradient(175deg, #000 0%, #2a2a2a 40%, #0d0d0d 70%, #000 100%)',
             WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 0 3px rgba(0,0,0,1)) drop-shadow(0 0 3px rgba(0,0,0,1)) drop-shadow(0 0 3px rgba(0,0,0,1)) drop-shadow(4px 3px 6px rgba(0,0,0,0.15))',
+            filter: 'drop-shadow(0 0 0px rgba(0,0,0,1)) drop-shadow(3px 0 1px rgba(0,0,0,0.55)) drop-shadow(4px 3px 6px rgba(0,0,0,0.15))',
           }}>O</span><span style={{
             display: 'inline-block', position: 'relative', zIndex: 2,
             transform: 'scaleX(1.3)', transformOrigin: 'center',
             background: 'linear-gradient(175deg, #000 0%, #2a2a2a 40%, #0d0d0d 70%, #000 100%)',
             WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 0 3px rgba(0,0,0,1)) drop-shadow(0 0 3px rgba(0,0,0,1)) drop-shadow(0 0 3px rgba(0,0,0,1)) drop-shadow(4px 3px 8px rgba(0,0,0,0.25))',
+            filter: 'drop-shadow(0 0 0px rgba(0,0,0,1)) drop-shadow(3px 0 1px rgba(0,0,0,0.55)) drop-shadow(-5px 0 1px rgba(0,0,0,0.95)) drop-shadow(4px 3px 8px rgba(0,0,0,0.25))',
           }}>S</span><span style={{
             display: 'inline-block', position: 'relative', zIndex: 3,
             transform: 'scaleX(2.0) translateX(1%) translateY(-3%)',
             transformOrigin: 'center',
             background: 'linear-gradient(175deg, #000 0%, #2a2a2a 40%, #0d0d0d 70%, #000 100%)',
             WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 0 3px rgba(0,0,0,1)) drop-shadow(0 0 3px rgba(0,0,0,1)) drop-shadow(0 0 3px rgba(0,0,0,1)) drop-shadow(5px 4px 12px rgba(0,0,0,0.35))',
+            filter: 'drop-shadow(0 0 0px rgba(0,0,0,1)) drop-shadow(-5px 0 1px rgba(0,0,0,0.95)) drop-shadow(5px 4px 12px rgba(0,0,0,0.35))',
           }}>1</span>
         </h1>
 
