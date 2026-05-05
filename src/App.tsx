@@ -1,55 +1,73 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const styles = `
-  * { cursor: none; }
+  html, body { background: #f8f8f8; cursor: default; overscroll-behavior: none; }
+  * { cursor: default !important; }
 
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(5px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+
+  @keyframes btn-appear {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 0.7; transform: translateY(0); }
+  }
+
+  @media (max-width: 768px) {
+    .rev-btn { font-size: clamp(18px, 7.5vw, 38px) !important; padding: 10px 26px 9px !important; font-family: 'Big Shoulders Display', sans-serif !important; font-weight: 900 !important; backdrop-filter: blur(6px) !important; -webkit-backdrop-filter: blur(6px) !important; }
+  }
+
+  .rev-btn:focus  { outline: none; }
+  .rev-btn:hover  { opacity: 1 !important; letter-spacing: 0.52em !important; cursor: pointer !important; }
+  .rev-btn:active { opacity: 1 !important; letter-spacing: 0.52em !important; }
 `
 
 export default function App() {
-  const cursorRef = useRef<HTMLDivElement>(null)
+  const h1Ref = useRef<HTMLHeadingElement>(null)
+  const [blurred, setBlurred] = useState(false)
+  const isMobile = window.innerWidth <= 768
 
+  /* scaleY mobile */
   useEffect(() => {
-    const move = (e: MouseEvent) => {
-      if (cursorRef.current) {
-        cursorRef.current.style.left = e.clientX + 'px'
-        cursorRef.current.style.top = e.clientY + 'px'
-      }
+    if (!h1Ref.current) return
+    const apply = (mobile: boolean) => {
+      if (!h1Ref.current) return
+      h1Ref.current.style.transform = mobile
+        ? 'translateX(-6vw) translateY(3vh) scaleY(3.2)'
+        : 'translateX(-6vw) translateY(3vh)'
     }
-    window.addEventListener('mousemove', move)
-    return () => window.removeEventListener('mousemove', move)
+    const mq = window.matchMedia('(max-width: 768px)')
+    apply(mq.matches)
+    const handler = (e: MediaQueryListEvent) => apply(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
   }, [])
+
+  const blurVal = isMobile ? 'blur(3px)' : 'blur(7px)'
 
   return (
     <>
       <style>{styles}</style>
 
+      {/* Container principal — desfocável */}
       <div style={{
-        position: 'fixed',
-        inset: 0,
+        position: 'fixed', inset: 0, overflow: 'hidden',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: 'radial-gradient(ellipse 20% 20% at center, #ffffff 0%, #f8f8f8 100%)',
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        filter: blurred ? blurVal : 'none',
+        transform: blurred ? 'scale(1.06)' : 'scale(1)',
+        transition: 'filter 0.6s ease, transform 0.6s ease',
       }}>
-
-
         {/* Paper grain */}
         <div style={{
-          position: 'absolute',
-          inset: 0,
+          position: 'absolute', inset: 0,
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          opacity: 0.025,
-          pointerEvents: 'none',
-          zIndex: 1,
+          opacity: 0.025, pointerEvents: 'none', zIndex: 1,
         }} />
 
         {/* OS1 */}
-        <h1 style={{
+        <h1 ref={h1Ref} style={{
           fontFamily: "'Big Shoulders Display', sans-serif",
           fontWeight: 900,
           fontSize: 'clamp(280px, 83vw, 1320px)',
@@ -58,29 +76,26 @@ export default function App() {
           color: 'transparent',
           WebkitTextFillColor: 'transparent',
           background: 'linear-gradient(175deg, #000 0%, #3a3a3a 50%, #0d0d0d 100%)',
-          WebkitBackgroundClip: 'text',
-          backgroundClip: 'text',
-          margin: 0,
-          whiteSpace: 'nowrap',
+          WebkitBackgroundClip: 'text', backgroundClip: 'text',
+          margin: 0, whiteSpace: 'nowrap',
           transform: 'translateX(-6vw) translateY(3vh)',
-          userSelect: 'none',
-          zIndex: 3,
+          userSelect: 'none', zIndex: 3, cursor: 'default',
         }}>
           <span style={{
             display: 'inline-block', position: 'relative', zIndex: 1,
-            transform: 'scaleX(1.3)', transformOrigin: 'center',
+            transform: 'scaleX(1.3) translateZ(0)', transformOrigin: 'center',
             background: 'linear-gradient(175deg, #000 0%, #2a2a2a 40%, #0d0d0d 70%, #000 100%)',
             WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
             filter: 'drop-shadow(0 0 0px rgba(0,0,0,1)) drop-shadow(3px 0 1px rgba(0,0,0,0.55)) drop-shadow(4px 3px 6px rgba(0,0,0,0.15))',
           }}>O</span><span style={{
             display: 'inline-block', position: 'relative', zIndex: 2,
-            transform: 'scaleX(1.3)', transformOrigin: 'center',
+            transform: 'scaleX(1.3) translateZ(0)', transformOrigin: 'center',
             background: 'linear-gradient(175deg, #000 0%, #2a2a2a 40%, #0d0d0d 70%, #000 100%)',
             WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
             filter: 'drop-shadow(0 0 0px rgba(0,0,0,1)) drop-shadow(3px 0 1px rgba(0,0,0,0.55)) drop-shadow(-5px 0 1px rgba(0,0,0,0.95)) drop-shadow(4px 3px 8px rgba(0,0,0,0.25))',
           }}>S</span><span style={{
             display: 'inline-block', position: 'relative', zIndex: 3,
-            transform: 'scaleX(2.0) translateX(1%) translateY(-3%)',
+            transform: 'scaleX(2.0) translateX(1%) translateY(-3%) translateZ(0)',
             transformOrigin: 'center',
             background: 'linear-gradient(175deg, #000 0%, #2a2a2a 40%, #0d0d0d 70%, #000 100%)',
             WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
@@ -88,57 +103,47 @@ export default function App() {
           }}>1</span>
         </h1>
 
-        {/* Label bottom-left */}
-        <div style={{
-          position: 'absolute',
-          bottom: 'clamp(18px, 3.5vw, 36px)',
-          left: 'clamp(24px, 5vw, 64px)',
-          fontFamily: "'Space Mono', monospace",
-          fontSize: 'clamp(8px, 0.72vw, 11px)',
-          letterSpacing: '0.28em',
-          color: '#000',
-          opacity: 0.22,
-          textTransform: 'uppercase',
-          userSelect: 'none',
-          zIndex: 4,
-          animation: 'fade-up 0.8s ease 1.5s both',
-        }}>
-          Operating System One
-        </div>
-
-        {/* Label bottom-right */}
-        <div style={{
-          position: 'absolute',
-          bottom: 'clamp(18px, 3.5vw, 36px)',
-          right: 'clamp(24px, 5vw, 64px)',
-          fontFamily: "'Space Mono', monospace",
-          fontSize: 'clamp(8px, 0.72vw, 11px)',
-          letterSpacing: '0.2em',
-          color: '#000',
-          opacity: 0.14,
-          userSelect: 'none',
-          zIndex: 4,
-          animation: 'fade-up 0.8s ease 1.7s both',
-        }}>
-          v1.0.0
-        </div>
-
-        {/* Cursor — DOM direto, sem re-render */}
-        <div ref={cursorRef} style={{
-          position: 'fixed',
-          left: -100,
-          top: -100,
-          width: 22,
-          height: 22,
-          pointerEvents: 'none',
-          zIndex: 9999,
-          transform: 'translate(-50%, -50%)',
-        }}>
-          <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 1, background: '#000', marginTop: -0.5 }} />
-          <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1, background: '#000', marginLeft: -0.5 }} />
-        </div>
-
       </div>
+
+      {/* Revolution — position:fixed fora do container blur */}
+      <div style={{
+        position: 'fixed', top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%) translateZ(0)',
+        zIndex: 100, pointerEvents: 'none',
+        willChange: 'transform', isolation: 'isolate',
+      }}>
+        <button
+          className="rev-btn"
+          onClick={() => setBlurred(b => !b)}
+          style={{
+            fontFamily: "'Big Shoulders Display', sans-serif",
+            fontSize: 'clamp(9px, 7vw, 112px)',
+            fontWeight: 900,
+            letterSpacing: '0.4em',
+            color: '#000',
+            opacity: 0.7,
+            textTransform: 'uppercase',
+            background: 'rgba(248, 248, 248, 0.18)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '0.5px solid rgba(0,0,0,0.18)',
+            borderRadius: '999px',
+            padding: 'clamp(10px, 1.4vw, 24px) clamp(32px, 5vw, 80px)',
+            whiteSpace: 'nowrap',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            lineHeight: 1,
+            paddingLeft: 'clamp(36px, 5.4vw, 88px)',
+            transition: 'letter-spacing 0.3s',
+            pointerEvents: 'auto',
+            WebkitTapHighlightColor: 'transparent',
+          } as React.CSSProperties}
+        >
+          Inicializar
+        </button>
+      </div>
+
     </>
   )
 }
